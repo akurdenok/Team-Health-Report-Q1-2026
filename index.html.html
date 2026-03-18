@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Team Health Report Q1 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F4F0;--sf:#FFF;--sf2:#EFEDE7;--sf3:#E8E6DF;--br:rgba(0,0,0,.07);--br2:rgba(0,0,0,.13);--tx:#1C1B18;--tx2:#68675F;--tx3:#A09F98;--gr:#166E48;--grb:#E4F2EB;--am:#7A4D00;--amb:#FEF0D6;--rd:#A01E1E;--rdb:#FDEAEA;--bl:#1654A0;--blb:#E6F0FA;--r:10px;--rs:6px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);font-size:14px;line-height:1.5}
+.shell{max-width:1140px;margin:0 auto;padding:28px 20px 72px}
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:24px;font-weight:600;letter-spacing:-.4px}
+.hmeta{font-size:12px;color:var(--tx2);margin-top:3px}
+.hrt{font-size:11px;color:var(--tx3);text-align:right;line-height:1.8}
+.badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--br2);background:var(--sf);color:var(--tx2)}
+.dot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
+
+/* FILTER BAR */
+.fbar{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:13px 18px;margin-bottom:20px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fl{font-size:11px;font-weight:600;color:var(--tx3);letter-spacing:.07em;text-transform:uppercase}
+.fsel{padding:6px 28px 6px 10px;border-radius:var(--rs);border:1px solid var(--br2);background:var(--sf2);color:var(--tx);font-size:13px;font-family:inherit;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23A09F98' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;min-width:210px}
+.fsel:focus{outline:2px solid #2352D8;outline-offset:1px}
+.frst{padding:6px 14px;border-radius:var(--rs);border:1px solid var(--br2);background:transparent;color:var(--tx2);font-size:12px;font-family:inherit;cursor:pointer;align-self:flex-end}
+.frst:hover{background:var(--sf2)}
+.fcnt{font-size:12px;color:#2352D8;font-weight:500;align-self:flex-end;padding-bottom:7px;display:none;white-space:nowrap}
+
+/* TABS */
+.tabs{display:flex;gap:2px;background:var(--sf2);border-radius:var(--r);padding:4px;margin-bottom:22px;width:fit-content}
+.tab{padding:8px 18px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;color:var(--tx2);border:none;background:transparent;font-family:inherit;transition:all .15s}
+.tab.active{background:var(--sf);color:var(--tx);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.view{display:none}.view.active{display:block}
+.slbl{font-size:11px;font-weight:600;letter-spacing:.08em;color:var(--tx3);text-transform:uppercase;margin-bottom:10px}
+
+/* STAT CARDS */
+.sg{display:grid;gap:11px;margin-bottom:22px}
+.sg.c4{grid-template-columns:repeat(4,1fr)}.sg.c3{grid-template-columns:repeat(3,1fr)}
+
+/* TOOLTIP CARD */
+.sc{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);padding:16px 18px;position:relative;cursor:default}
+.sc-l{font-size:12px;color:var(--tx2);margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.sc-l .iq{width:14px;height:14px;border-radius:50%;background:var(--sf2);border:1px solid var(--br2);display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:var(--tx3);flex-shrink:0;cursor:help}
+.sc-v{font-size:30px;font-weight:600;letter-spacing:-1px;line-height:1}
+.sc-s{font-size:12px;color:var(--tx3);margin-top:4px}
+.vg{color:var(--gr)}.va{color:var(--am)}.vr{color:var(--rd)}.vb{color:var(--bl)}
+
+/* TOOLTIP POPUP */
+.tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1C1B18;color:#fff;font-size:11px;line-height:1.5;padding:9px 12px;border-radius:8px;white-space:nowrap;z-index:100;pointer-events:none;opacity:0;transition:opacity .15s;max-width:280px;white-space:normal;text-align:left}
+.tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:#1C1B18}
+.sc:hover .tip{opacity:1}
+.tip code{background:rgba(255,255,255,.15);padding:1px 5px;border-radius:4px;font-family:'DM Mono',monospace;font-size:10px}
+
+/* TWO COL */
+.tc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.pn{background:var(--sf);border:1px solid var(--br);border-radius:var(--r);overflow:hidden}
+.ph{padding:13px 17px;border-bottom:1px solid var(--br);font-weight:500;font-size:13px;display:flex;align-items:center;gap:6px}
+.ph .iq{width:15px;height:15px;border-radius:50%;background:var(--sf2);border:1px solid var(--br2);display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:var(--tx3);flex-shrink:0;cursor:help;position:relative}
+.ph .iq .tip{bottom:calc(100% + 6px);left:0;transform:none}
+.ph .iq:hover .tip{opacity:1}
+
+/* BAR CHART */
+.bl{padding:12px 17px}
+.br-row{display:flex;align-items:center;gap:10px;padding:5px 0}
+.bn{font-size:13px;width:190px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bn.bold{font-weight:600}.bn.dim{color:var(--tx3);font-size:12px}
+.bt{flex:1;height:20px;background:var(--sf2);border-radius:4px;overflow:hidden}
+.bf{height:100%;border-radius:4px;transition:width .5s ease}
+.bv{font-size:12px;font-weight:600;width:48px;text-align:right;flex-shrink:0;font-family:'DM Mono',monospace}
+.bnn{font-size:11px;color:var(--tx3);width:52px;flex-shrink:0}
+.bdiv{border:none;border-top:1px solid var(--br);margin:6px 0}
+.fg1{background:#20966A}.fg2{background:#4CBF85}.fa{background:#C07C10}.fo{background:#D96010}.fr{background:#C93030}.fgy{background:#B0AFA9}
+
+/* MOOD BAR */
+.mdb{display:flex;border-radius:5px;overflow:hidden;height:26px;margin-bottom:14px}
+.ms{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff}
+
+/* TOGGLE */
+.tbar{display:flex;gap:6px;margin-bottom:14px}
+.tbtn{padding:5px 13px;border-radius:20px;border:1px solid var(--br2);background:transparent;color:var(--tx2);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;transition:all .15s}
+.tbtn.active{background:var(--tx);color:#fff;border-color:var(--tx)}
+
+/* ACCORDION */
+.acc{border:1px solid var(--br);border-radius:var(--r);overflow:hidden;margin-bottom:8px}
+.ah{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;cursor:pointer;background:var(--sf);user-select:none}
+.ah:hover{background:var(--sf2)}
+.ahl{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.ahr{display:flex;align-items:center;gap:8px}
+.cv{font-size:10px;color:var(--tx3)}
+.ab{display:none;border-top:1px solid var(--br)}
+.ab.open{display:block}
+
+/* TABLE */
+.dt{width:100%;border-collapse:collapse;font-size:13px}
+.dt th{font-size:11px;font-weight:600;color:var(--tx3);text-align:left;padding:7px 13px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--br);white-space:nowrap}
+.dt td{padding:8px 13px;border-bottom:1px solid var(--br);vertical-align:middle}
+.dt tr:last-child td{border-bottom:none}
+.dt tr:hover td{background:var(--sf2)}
+
+/* PILLS */
+.pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.pr{background:var(--rdb);color:var(--rd)}.pa{background:var(--amb);color:var(--am)}
+.pg{background:var(--grb);color:var(--gr)}.pgy{background:var(--sf2);color:var(--tx2)}
+
+/* ALERT */
+.alrt{padding:13px 16px;border-radius:var(--r);font-size:13px;margin-top:12px;background:var(--amb);color:var(--am);border:1px solid rgba(120,77,0,.15)}
+.empty{padding:28px;text-align:center;color:var(--tx3);font-size:13px}
+
+@media(max-width:780px){.sg.c4,.sg.c3{grid-template-columns:1fr 1fr}.tc{grid-template-columns:1fr}.bn{width:110px}.fbar{flex-direction:column}.fsel{min-width:0}}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="hdr">
+  <div><h1>Team Health Report</h1><div class="hmeta">Q1 2026 · Pilot · People Partners</div></div>
+  <div class="hrt">Generated Mar 18, 2026<br>310 survey · 91 PF mood · 325 1:1s</div>
+</div>
+<div class="badges">
+  <span class="badge"><span class="dot" style="background:#2352D8"></span>Engagement Survey (Typeform)</span>
+  <span class="badge"><span class="dot" style="background:#20966A"></span>Mood Tracker (PeopleForce)</span>
+  <span class="badge"><span class="dot" style="background:#C07C10"></span>1:1 Notes (Notion)</span>
+</div>
+
+<!-- FILTER BAR -->
+<div class="fbar">
+  <div class="fg"><span class="fl">Department</span>
+    <select class="fsel" id="fd" onchange="onF()"><option value="">All departments</option></select>
+  </div>
+  <div class="fg"><span class="fl">Division / Cluster</span>
+    <select class="fsel" id="fdv" onchange="onF()"><option value="">All divisions</option></select>
+  </div>
+  <button class="frst" onclick="resetF()">Reset</button>
+  <span class="fcnt" id="fcnt"></span>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="sTab('enps',this)">eNPS &amp; Manager Feedback</button>
+  <button class="tab" onclick="sTab('mood',this)">Team Mood</button>
+  <button class="tab" onclick="sTab('burn',this)">Burnout Risk</button>
+</div>
+
+<!-- TAB 1 -->
+<div id="tab-enps" class="view active">
+  <div class="sg c4" id="enps-stats"></div>
+  <div class="tc">
+    <div class="pn">
+      <div class="ph">eNPS by Department
+        <span class="iq">?<div class="tip"><strong>eNPS formula</strong><br><code>((Promoters − Detractors) / N) × 100</code><br>Promoters: score 8–10 &nbsp;|&nbsp; Detractors: score 0–7<br>Passives (7–8) counted in N but not in formula<br>Source: "How likely are you to recommend TaxDome?"</div></span>
+      </div>
+      <div class="bl" id="enps-bars"></div>
+    </div>
+    <div class="pn">
+      <div class="ph">Manager Score by Department
+        <span class="iq">?<div class="tip"><strong>Manager Score formula</strong><br><code>avg of 4 direct manager questions + feedback frequency</code><br>Scale 1–5. Questions: encourages development, support & respect, clear guidance, regular feedback<br>Source: Engagement Survey</div></span>
+      </div>
+      <div class="bl" id="mgr-bars"></div>
+    </div>
+  </div>
+  <div class="pn" style="margin-bottom:22px">
+    <div class="ph">Indirect Manager Signals — % scoring ≥ 4
+      <span class="iq">?<div class="tip"><strong>Indirect signal formula</strong><br><code>% respondents scoring ≥4 on 1–5 scale</code><br>Selected via Pearson correlation with direct manager score (r ≥ 0.50 threshold)<br>Source: Engagement Survey</div></span>
+    </div>
+    <div style="padding:15px 17px"><div class="sg c3" id="ind-stats" style="margin-bottom:0"></div></div>
+  </div>
+</div>
+
+<!-- TAB 2 -->
+<div id="tab-mood" class="view">
+  <div class="sg c4" id="mood-stats"></div>
+  <div class="tc">
+    <div class="pn">
+      <div class="ph">PeopleForce Mood Distribution
+        <span class="iq">?<div class="tip"><strong>PF Mood</strong><br>Self-reported mood rating on scale 1–5 (emoji/faces)<br>Entries collected weekly. This snapshot: Mar 2026 (n=91)<br>Source: PeopleForce mood tracker</div></span>
+      </div>
+      <div class="bl" id="pf-bars"></div>
+    </div>
+    <div class="pn">
+      <div class="ph">Low Mood — Rating ≤ 2
+        <span class="iq">?<div class="tip"><strong>Low mood flag</strong><br>Employees with most recent PF mood rating of 1 or 2<br>Cross-signal = also flagged in 1:1 burnout data</div></span>
+      </div>
+      <div id="pf-low"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB 3 -->
+<div id="tab-burn" class="view">
+  <div class="tbar">
+    <button class="tbtn active" onclick="sBurn('avg',this)">Team averages</button>
+    <button class="tbtn" onclick="sBurn('ppl',this)">By employee</button>
+  </div>
+  <div id="b-avg">
+    <div class="sg c4" id="burn-stats"></div>
+    <div class="pn">
+      <div class="ph">Workload Score by Department
+        <span class="iq">?<div class="tip"><strong>Workload score formula</strong><br><code>avg score on "My workload is manageable" (1–5 scale)</code><br>Lower = more at risk. "% ≤2" = share of respondents rating 1 or 2<br>Source: Engagement Survey</div></span>
+      </div>
+      <div class="bl" id="wl-bars"></div>
+    </div>
+  </div>
+  <div id="b-ppl" style="display:none">
+    <div class="slbl" style="margin-bottom:12px">Employees with Medium / High risk · Q1 2026 · Source: Notion 1:1</div>
+    <div id="bacc"></div><div id="bcross"></div>
+  </div>
+</div>
+
+</div><!-- /shell -->
+<script>
+const S=[{"d":"Development","dv":"[Dev] FirmOS Cluster","e":6.0,"w":3.0,"m":4.0},{"d":"Revenue","dv":"[Revenue] International Growth","e":8.0,"w":1.0,"m":4.2},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":8.0,"w":3.0,"m":4.6},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":7.0,"w":4.0,"m":4.0},{"d":"Revenue","dv":"","e":8.0,"w":4.0,"m":4.8},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":9.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Customer Care","e":10.0,"w":5.0,"m":3.8},{"d":"Revenue","dv":"","e":10.0,"w":5.0,"m":5.0},{"d":"Product","dv":"[Dev] Tax Preparation Cluster","e":10.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Sales/ Outbound team","e":10.0,"w":5.0,"m":3.2},{"d":"Revenue","dv":"[Revenue] Customer Care","e":10.0,"w":3.0,"m":4.33},{"d":"Product","dv":"[Product] User Researchers","e":7.0,"w":4.0,"m":4.2},{"d":"Revenue","dv":"[Revenue] Technical Support","e":3.0,"w":2.0,"m":3.8},{"d":"Revenue","dv":"[Revenue] Sales/ Inbound team","e":8.0,"w":5.0,"m":3.2},{"d":"Development","dv":"","e":8.0,"w":3.0,"m":3.4},{"d":"Revenue","dv":"[Revenue] Education","e":10.0,"w":4.0,"m":4.0},{"d":"Revenue","dv":"[Revenue] Customer Care","e":10.0,"w":3.0,"m":3.8},{"d":"Product","dv":"[Dev] Tax Preparation Cluster","e":10.0,"w":2.0,"m":4.2},{"d":"Revenue","dv":"","e":6.0,"w":4.0,"m":3.0},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":9.0,"w":4.0,"m":4.0},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":6.0,"w":3.0,"m":4.0},{"d":"Development","dv":"[Dev] AI & ML","e":9.0,"w":4.0,"m":5.0},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":8.0,"w":4.0,"m":3.0},{"d":"Revenue","dv":"[Revenue] Sales Development","e":10.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] Staff Engineering","e":6.0,"w":2.0,"m":4.2},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":8.0,"w":3.0,"m":3.8},{"d":"Development","dv":"[Dev] InfoSec","e":10.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Sales Development","e":10.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Sales/ Outbound team","e":10.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":7.0,"w":4.0,"m":4.2},{"d":"Revenue","dv":"[Revenue] Sales/ Inbound team","e":7.0,"w":4.0,"m":4.0},{"d":"Revenue","dv":"[Revenue] Sales Development","e":9.0,"w":4.0,"m":4.0},{"d":"Product","dv":"[Revenue] Sales/ Outbound team","e":8.0,"w":5.0,"m":5.0},{"d":"Product","dv":"","e":8.0,"w":4.0,"m":3.6},{"d":"Development","dv":"[Dev] Technical Cluster","e":5.0,"w":4.0,"m":4.0},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":8.0,"w":3.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Sales Development","e":7.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Customer Care","e":7.0,"w":3.0,"m":2.6},{"d":"Revenue","dv":"[Revenue] Sales/ Inbound team","e":5.0,"w":3.0,"m":3.2},{"d":"Revenue","dv":"[Revenue] Education","e":7.0,"w":1.0,"m":4.6},{"d":"Revenue","dv":"[Revenue] Education","e":2.0,"w":2.0,"m":1.6},{"d":"Operations","dv":"[Operations] Recruitment","e":7.0,"w":3.0,"m":3.2},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":9.0,"w":5.0,"m":5.0},{"d":"Product","dv":"[Dev] Tax Preparation Cluster","e":8.0,"w":3.0,"m":5.0},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":8.0,"w":3.0,"m":4.4},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":5.0,"w":3.0,"m":4.2},{"d":"Development","dv":"[Dev] Technical Cluster","e":8.0,"w":4.0,"m":4.33},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":8.0,"w":3.0,"m":4.6},{"d":"Revenue","dv":"[Revenue] Marketing","e":9.0,"w":4.0,"m":3.33},{"d":"Revenue","dv":"[Revenue] Customer Onboarding","e":5.0,"w":5.0,"m":2.0},{"d":"Revenue","dv":"[Revenue] Sales/ Inbound team","e":8.0,"w":4.0,"m":5.0},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":7.0,"w":3.0,"m":3.6},{"d":"Revenue","dv":"[Revenue] Customer Care","e":10.0,"w":4.0,"m":3.4},{"d":"Operations","dv":"[Operations] Recruitment","e":9.0,"w":4.0,"m":4.0},{"d":"Revenue","dv":"[Revenue] Sales/ Inbound team","e":9.0,"w":3.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] RevOps","e":6.0,"w":3.0,"m":3.0},{"d":"Revenue","dv":"[Revenue] Sales/ Inbound team","e":10.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Sales/ Outbound team","e":10.0,"w":3.0,"m":5.0},{"d":"Development","dv":"[Dev] AI & ML","e":10.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":10.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"[Dev] Revenue Cluster","e":8.0,"w":3.0,"m":5.0},{"d":"Product","dv":"[Product] Design","e":4.0,"w":2.0,"m":3.8},{"d":"Revenue","dv":"[Revenue] Sales Development","e":10.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Customer Onboarding","e":10.0,"w":3.0,"m":5.0},{"d":"Operations","dv":"[Revenue] Sales/ Inbound team","e":7.0,"w":3.0,"m":3.2},{"d":"Operations","dv":"[Operations] HR People Partners","e":6.0,"w":2.0,"m":5.0},{"d":"Development","dv":"","e":7.0,"w":3.0,"m":4.4},{"d":"Revenue","dv":"[Revenue] Customer Onboarding","e":9.0,"w":3.0,"m":4.6},{"d":"Revenue","dv":"[Revenue] Technical Support","e":9.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Technical Support","e":7.0,"w":3.0,"m":4.8},{"d":"Revenue","dv":"[Dev] Revenue Cluster","e":10.0,"w":3.0,"m":5.0},{"d":"Operations","dv":"Payroll","e":10.0,"w":4.0,"m":5.0},{"d":"Operations","dv":"[Operations] Recruitment","e":9.0,"w":5.0,"m":4.67},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":7.0,"w":4.0,"m":3.0},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":7.0,"w":4.0,"m":4.0},{"d":"Product","dv":"[Product] Design","e":4.0,"w":3.0,"m":4.0},{"d":"Revenue","dv":"[Revenue] Marketing","e":8.0,"w":3.0,"m":3.4},{"d":"Revenue","dv":"[Revenue] Marketing","e":7.0,"w":3.0,"m":3.0},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":5.0,"w":2.0,"m":3.8},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":7.0,"w":5.0,"m":2.4},{"d":"Revenue","dv":"[Revenue] Marketing","e":7.0,"w":4.0,"m":4.6},{"d":"Revenue","dv":"[Revenue] Customer Success High & Medium Touch","e":8.0,"w":3.0,"m":3.8},{"d":"Development","dv":"[Dev] Technical Cluster","e":5.0,"w":4.0,"m":3.6},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":8.0,"w":4.0,"m":4.4},{"d":"Product","dv":"","e":6.0,"w":3.0,"m":4.2},{"d":"Product","dv":"[Product] Product Management","e":6.0,"w":4.0,"m":3.4},{"d":"Operations","dv":"[Operations] Recruitment","e":9.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Sales/ Inbound team","e":10.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"","e":9.0,"w":2.0,"m":3.0},{"d":"Revenue","dv":"[Revenue] Technical Support","e":8.0,"w":3.0,"m":4.0},{"d":"Revenue","dv":"[Revenue] Technical Support","e":0.0,"w":1.0,"m":3.8},{"d":"Revenue","dv":"[Revenue] Technical Support","e":6.0,"w":2.0,"m":4.2},{"d":"Product","dv":"[Product] User Researchers","e":7.0,"w":4.0,"m":4.8},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":9.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Customer Onboarding","e":10.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Product] Design","e":7.0,"w":3.0,"m":4.8},{"d":"Operations","dv":"","e":10.0,"w":1.0,"m":3.4},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":7.0,"w":5.0,"m":4.4},{"d":"Development","dv":"[Dev] InfoSec","e":10.0,"w":5.0,"m":5.0},{"d":"Operations","dv":"Payroll","e":9.0,"w":3.0,"m":4.6},{"d":"Operations","dv":"[Operations] HR People Partners","e":6.0,"w":4.0,"m":5.0},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":7.0,"w":3.0,"m":4.2},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":9.0,"w":4.0,"m":4.4},{"d":"Product","dv":"","e":7.0,"w":2.0,"m":2.6},{"d":"Revenue","dv":"[Revenue] Technical Support","e":10.0,"w":3.0,"m":4.67},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":9.0,"w":3.0,"m":4.33},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":9.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] International Custo﻿mer Success","e":10.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"","e":10.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":10.0,"w":5.0,"m":5.0},{"d":"Operations","dv":"[Operations]Processes","e":9.0,"w":3.0,"m":4.8},{"d":"Revenue","dv":"[Revenue] International Growth","e":6.0,"w":3.0,"m":3.8},{"d":"Development","dv":"[Dev] Technical Cluster","e":5.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] Staff Engineering","e":9.0,"w":5.0,"m":3.0},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":3.0,"w":3.0,"m":3.4},{"d":"Revenue","dv":"[Revenue] Customer Onboarding","e":9.0,"w":3.0,"m":4.0},{"d":"Revenue","dv":"[Revenue] Customer Success High & Medium Touch","e":7.0,"w":4.0,"m":4.8},{"d":"Revenue","dv":"[Revenue] Education","e":10.0,"w":5.0,"m":3.8},{"d":"Development","dv":"[Dev] Technical Cluster","e":9.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":6.0,"w":4.0,"m":4.0},{"d":"Development","dv":"[Dev] Technical Cluster","e":7.0,"w":4.0,"m":4.8},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":6.0,"w":4.0,"m":3.2},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":8.0,"w":4.0,"m":4.8},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":10.0,"w":4.0,"m":3.8},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":7.0,"w":2.0,"m":5.0},{"d":"Product","dv":"[Product] Design","e":6.0,"w":4.0,"m":2.4},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":5.0,"w":3.0,"m":3.0},{"d":"Development","dv":"","e":9.0,"w":5.0,"m":5.0},{"d":"Development","dv":"","e":10.0,"w":4.0,"m":4.0},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":8.0,"w":3.0,"m":3.8},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":7.0,"w":3.0,"m":3.2},{"d":"Development","dv":"[Dev] InfoSec","e":10.0,"w":5.0,"m":4.0},{"d":"Operations","dv":"[Operations]Finance","e":8.0,"w":4.0,"m":2.0},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":7.0,"w":3.0,"m":3.4},{"d":"Product","dv":"[Dev] Bookkeeping Cluster","e":8.0,"w":2.0,"m":2.8},{"d":"Revenue","dv":"[Revenue] Customer Care","e":9.0,"w":4.0,"m":4.2},{"d":"Development","dv":"[Dev] Technical Cluster","e":7.0,"w":3.0,"m":4.0},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":10.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Customer Success Low Touch","e":10.0,"w":4.0,"m":3.6},{"d":"Operations","dv":"[Operations] Recruitment","e":4.0,"w":4.0,"m":2.2},{"d":"Operations","dv":"","e":7.0,"w":2.0,"m":3.6},{"d":"Revenue","dv":"[Revenue] RevOps","e":7.0,"w":2.0,"m":4.0},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":3.0,"w":4.0,"m":2.8},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":10.0,"w":5.0,"m":4.2},{"d":"Revenue","dv":"[Revenue] Sales/ Inbound team","e":1.0,"w":2.0,"m":4.6},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":3.0,"w":2.0,"m":2.2},{"d":"Product","dv":"","e":9.0,"w":3.0,"m":5.0},{"d":"Revenue","dv":"","e":10.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"","e":8.0,"w":4.0,"m":5.0},{"d":"Operations","dv":"[Dev] FirmOS Cluster","e":8.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Customer Success Low Touch","e":6.0,"w":4.0,"m":3.4},{"d":"Product","dv":"[Product] Design","e":6.0,"w":3.0,"m":2.0},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":7.0,"w":4.0,"m":3.2},{"d":"Development","dv":"[Dev] Technical Cluster","e":4.0,"w":3.0,"m":3.0},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":7.0,"w":4.0,"m":3.0},{"d":"Revenue","dv":"","e":10.0,"w":3.0,"m":4.6},{"d":"Revenue","dv":"[Revenue] Education","e":10.0,"w":5.0,"m":4.4},{"d":"Product","dv":"[Dev] AI & ML","e":10.0,"w":3.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Education","e":7.0,"w":2.0,"m":4.2},{"d":"Operations","dv":"[Operations] HR People Partners","e":6.0,"w":4.0,"m":4.6},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":7.0,"w":3.0,"m":2.2},{"d":"Operations","dv":"[Operations] Recruitment","e":10.0,"w":4.0,"m":5.0},{"d":"Development","dv":"","e":6.0,"w":3.0,"m":4.2},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":5.0,"w":4.0,"m":3.6},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":5.0,"w":3.0,"m":2.8},{"d":"Revenue","dv":"[Revenue] Sales/ Outbound team","e":10.0,"w":3.0,"m":5.0},{"d":"Product","dv":"[Product] Data Analytics","e":9.0,"w":3.0,"m":4.4},{"d":"Revenue","dv":"[Revenue] Customer Onboarding","e":10.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":7.0,"w":4.0,"m":5.0},{"d":"Product","dv":"","e":10.0,"w":3.0,"m":4.8},{"d":"Revenue","dv":"[Revenue] Customer Care","e":9.0,"w":4.0,"m":3.8},{"d":"Revenue","dv":"[Revenue] Sales Development","e":10.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Customer Care","e":8.0,"w":3.0,"m":2.8},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":9.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] Technical Cluster","e":5.0,"w":4.0,"m":5.0},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":8.0,"w":5.0,"m":4.6},{"d":"Revenue","dv":"[Revenue] Customer Success","e":10.0,"w":4.0,"m":5.0},{"d":"Development","dv":"[Dev] Technical Cluster","e":8.0,"w":4.0,"m":5.0},{"d":"Product","dv":"[Dev] FirmOS Cluster","e":6.0,"w":4.0,"m":3.4},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":9.0,"w":5.0,"m":5.0},{"d":"Development","dv":"","e":5.0,"w":2.0,"m":3.4},{"d":"Operations","dv":"[Dev] DevOps","e":7.0,"w":4.0,"m":4.2},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":9.0,"w":4.0,"m":3.2},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":7.0,"w":3.0,"m":4.0},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":7.0,"w":4.0,"m":4.8},{"d":"Revenue","dv":"[Revenue] Customer Success","e":8.0,"w":4.0,"m":3.6},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":7.0,"w":4.0,"m":4.0},{"d":"Development","dv":"[Dev] Technical Cluster","e":8.0,"w":4.0,"m":4.4},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":5.0,"w":3.0,"m":3.0},{"d":"Development","dv":"","e":8.0,"w":3.0,"m":4.8},{"d":"Revenue","dv":"[Revenue] Customer Success","e":8.0,"w":4.0,"m":4.4},{"d":"Revenue","dv":"[Revenue] Marketing","e":10.0,"w":5.0,"m":4.0},{"d":"Revenue","dv":"","e":3.0,"w":2.0,"m":2.67},{"d":"Revenue","dv":"[Revenue] Customer Success","e":4.0,"w":4.0,"m":2.6},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":6.0,"w":3.0,"m":4.4},{"d":"Revenue","dv":"[Revenue] Customer Success","e":8.0,"w":2.0,"m":3.0},{"d":"Development","dv":"[Dev] Technical Cluster","e":5.0,"w":3.0,"m":3.8},{"d":"Operations","dv":"[Dev] DevOps","e":10.0,"w":5.0,"m":4.2},{"d":"Revenue","dv":"","e":7.0,"w":4.0,"m":2.6},{"d":"Development","dv":"","e":7.0,"w":2.0,"m":3.4},{"d":"Development","dv":"","e":9.0,"w":5.0,"m":4.8},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":2.0,"w":3.0,"m":2.8},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":8.0,"w":3.0,"m":4.0},{"d":"Product","dv":"[Dev] Growth&Billing Cluster","e":6.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Customer Success","e":5.0,"w":3.0,"m":4.2},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":7.0,"w":4.0,"m":2.0},{"d":"Revenue","dv":"","e":7.0,"w":3.0,"m":4.4},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":8.0,"w":5.0,"m":4.8},{"d":"Revenue","dv":"[Revenue] Sales","e":10.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] DevOps","e":7.0,"w":4.0,"m":4.0},{"d":"Revenue","dv":"[Revenue] Marketing","e":7.0,"w":2.0,"m":3.0},{"d":"Development","dv":"","e":1.0,"w":1.0,"m":2.8},{"d":"Product","dv":"[Product] Data Analytics","e":10.0,"w":5.0,"m":4.6},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":8.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":9.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Sales","e":8.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":8.0,"w":4.0,"m":4.33},{"d":"Development","dv":"[Dev] Staff Engineering","e":6.0,"w":2.0,"m":4.0},{"d":"Product","dv":"[Product] Design","e":9.0,"w":5.0,"m":4.33},{"d":"Operations","dv":"","e":5.0,"w":3.0,"m":3.2},{"d":"Revenue","dv":"[Revenue] Customer Success","e":6.0,"w":5.0,"m":3.67},{"d":"Operations","dv":"","e":10.0,"w":1.0,"m":5.0},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":7.0,"w":2.0,"m":3.0},{"d":"Revenue","dv":"[Product] Design","e":10.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Customer Success","e":7.0,"w":2.0,"m":4.0},{"d":"Revenue","dv":"[Revenue] Customer Success","e":7.0,"w":3.0,"m":4.2},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":8.0,"w":4.0,"m":3.4},{"d":"Development","dv":"[Dev] Technical Cluster","e":6.0,"w":3.0,"m":4.4},{"d":"Revenue","dv":"[Revenue] Sales","e":6.0,"w":3.0,"m":4.67},{"d":"Revenue","dv":"[Revenue] Customer Success","e":10.0,"w":3.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Customer Success","e":9.0,"w":5.0,"m":4.33},{"d":"Revenue","dv":"[Revenue] Customer Success","e":10.0,"w":4.0,"m":3.8},{"d":"Development","dv":"[Dev] Technical Cluster","e":8.0,"w":4.0,"m":4.0},{"d":"Development","dv":"[Product] Data Analytics","e":8.0,"w":4.0,"m":3.33},{"d":"Revenue","dv":"[Revenue] Customer Success","e":9.0,"w":5.0,"m":5.0},{"d":"Product","dv":"","e":7.0,"w":1.0,"m":3.8},{"d":"Revenue","dv":"","e":10.0,"w":5.0,"m":3.0},{"d":"Revenue","dv":"[Revenue] Customer Success","e":6.0,"w":2.0,"m":5.0},{"d":"Revenue","dv":"[Dev] Revenue Cluster","e":8.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Sales","e":9.0,"w":4.0,"m":3.8},{"d":"Revenue","dv":"","e":9.0,"w":4.0,"m":2.8},{"d":"Operations","dv":"[Operational]Processes","e":8.0,"w":3.0,"m":4.6},{"d":"Revenue","dv":"[Revenue] Marketing","e":7.0,"w":4.0,"m":3.0},{"d":"Revenue","dv":"[Revenue] Customer Success","e":9.0,"w":5.0,"m":5.0},{"d":"Operations","dv":"[Operational] HR","e":5.0,"w":4.0,"m":3.2},{"d":"Operations","dv":"","e":9.0,"w":4.0,"m":4.6},{"d":"Development","dv":"[Dev] Revenue Cluster","e":9.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Sales","e":10.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"","e":10.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Customer Success","e":8.0,"w":4.0,"m":3.4},{"d":"Operations","dv":"[Operational]Finance","e":9.0,"w":4.0,"m":5.0},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":10.0,"w":5.0,"m":3.8},{"d":"Product","dv":"[Product] Design","e":10.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":8.0,"w":4.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Sales","e":8.0,"w":4.0,"m":5.0},{"d":"Operations","dv":"","e":9.0,"w":3.0,"m":4.6},{"d":"Product","dv":"[Product] User Researchers","e":8.0,"w":4.0,"m":4.6},{"d":"Revenue","dv":"[Revenue] Customer Success","e":10.0,"w":4.0,"m":4.67},{"d":"Development","dv":"[Dev] Technical Cluster","e":6.0,"w":4.0,"m":4.8},{"d":"Revenue","dv":"","e":10.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Customer Success","e":9.0,"w":4.0,"m":5.0},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":6.0,"w":3.0,"m":3.0},{"d":"Revenue","dv":"[Revenue] Customer Success","e":10.0,"w":4.0,"m":5.0},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":3.0,"w":3.0,"m":3.4},{"d":"Revenue","dv":"[Revenue] Customer Success","e":10.0,"w":3.0,"m":5.0},{"d":"Development","dv":"","e":9.0,"w":3.0,"m":4.0},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":9.0,"w":5.0,"m":3.8},{"d":"Product","dv":"","e":9.0,"w":3.0,"m":3.2},{"d":"Revenue","dv":"","e":8.0,"w":3.0,"m":4.8},{"d":"Product","dv":"[Product] Design","e":2.0,"w":4.0,"m":2.8},{"d":"Operations","dv":"[Operational] HR","e":7.0,"w":3.0,"m":4.0},{"d":"Product","dv":"","e":10.0,"w":1.0,"m":5.0},{"d":"Operations","dv":"[Operational] HR","e":5.0,"w":2.0,"m":4.4},{"d":"Product","dv":"[Product] Design","e":3.0,"w":3.0,"m":1.2},{"d":"Revenue","dv":"[Revenue] Sales","e":10.0,"w":4.0,"m":4.0},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":9.0,"w":5.0,"m":4.6},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":8.0,"w":4.0,"m":4.0},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":10.0,"w":5.0,"m":4.8},{"d":"Development","dv":"[Dev] Revenue Cluster","e":8.0,"w":4.0,"m":5.0},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":10.0,"w":4.0,"m":5.0},{"d":"Development","dv":"","e":9.0,"w":3.0,"m":3.8},{"d":"Development","dv":"[Dev] Technical Cluster","e":9.0,"w":5.0,"m":5.0},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":5.0,"w":3.0,"m":2.8},{"d":"Development","dv":"","e":8.0,"w":4.0,"m":4.0},{"d":"Product","dv":"[Dev] Bookkeeping Cluster","e":6.0,"w":1.0,"m":3.8},{"d":"Revenue","dv":"[Revenue] Marketing","e":7.0,"w":3.0,"m":3.4},{"d":"Development","dv":"[Dev] Tax Preparation Cluster","e":8.0,"w":4.0,"m":4.0},{"d":"Development","dv":"[Revenue] Sales","e":10.0,"w":5.0,"m":5.0},{"d":"Revenue","dv":"","e":7.0,"w":3.0,"m":3.6},{"d":"Operations","dv":"[Operational]Processes","e":6.0,"w":2.0,"m":4.6},{"d":"Operations","dv":"","e":8.0,"w":3.0,"m":3.8},{"d":"Revenue","dv":"[Revenue] Customer Success","e":4.0,"w":4.0,"m":5.0},{"d":"Product","dv":"[Product] User Researchers","e":9.0,"w":4.0,"m":5.0},{"d":"Operations","dv":"[Operational]Processes","e":9.0,"w":5.0,"m":5.0},{"d":"Operations","dv":"Payroll","e":9.0,"w":4.0,"m":5.0},{"d":"Operations","dv":"[Operational] HR","e":7.0,"w":2.0,"m":2.6},{"d":"Revenue","dv":"[Revenue] Marketing","e":9.0,"w":4.0,"m":3.0},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":8.0,"w":3.0,"m":2.6},{"d":"Operations","dv":"[Dev] InfoSec","e":9.0,"w":4.0,"m":4.33},{"d":"Revenue","dv":"[Dev] Revenue Cluster","e":8.0,"w":3.0,"m":4.0},{"d":"Revenue","dv":"","e":9.0,"w":4.0,"m":4.0},{"d":"Development","dv":"","e":9.0,"w":4.0,"m":2.2},{"d":"Development","dv":"","e":6.0,"w":3.0,"m":4.0},{"d":"Product","dv":"[Product] Data Analytics","e":9.0,"w":3.0,"m":4.0},{"d":"Development","dv":"[Dev] FirmOS Cluster","e":7.0,"w":2.0,"m":2.33},{"d":"Development","dv":"[Dev] Growth&Billing Cluster","e":8.0,"w":5.0,"m":5.0},{"d":"Operations","dv":"","e":9.0,"w":4.0,"m":3.0},{"d":"Development","dv":"[Dev] Getting Paid Cluster","e":4.0,"w":3.0,"m":5.0},{"d":"Revenue","dv":"[Revenue] Marketing","e":9.0,"w":4.0,"m":4.4},{"d":"Development","dv":"[Dev] Bookkeeping Cluster","e":10.0,"w":5.0,"m":4.33}];
+
+const PF=[{"n":"Yuliya Yatsko","r":1},{"n":"Petar Iliev","r":1},{"n":"Maria Mazur","r":1},{"n":"Raman Tsekhanau","r":2},{"n":"Oleg Pervushin","r":2},{"n":"Darya Sych","r":2},{"n":"Felippe Constancio","r":2},{"n":"Ekaterina Dzyuba","r":2},{"n":"Aleksei Makadzeba","r":2},{"n":"Ayodunni Ireti-Sonia","r":3},{"n":"José Luis Bula Pertuz","r":5},{"n":"Yury Pavlenko","r":3},{"n":"Maksim Prokhorov","r":4},{"n":"Armine Hakobyan","r":4},{"n":"Hanna Bardziuk","r":4},{"n":"Artur Antonov","r":4},{"n":"Aditya Sharma","r":5},{"n":"Dmytro Pashkevych","r":4},{"n":"Artem Makarov","r":4},{"n":"Kateryna Hrynyk","r":4},{"n":"Nataliia Drachenko","r":3},{"n":"Valentyna Lisova","r":4},{"n":"Mariya Tkachuk","r":3},{"n":"Vladislav Lukoyanov","r":5},{"n":"Bohdan Solodkin","r":4},{"n":"Sergey Zhuchenko","r":3},{"n":"Ilyas Faizullin","r":4},{"n":"Natalia Shapoval","r":4},{"n":"Stepan Fedorov","r":3},{"n":"Oksana Kovalenko","r":4},{"n":"Roman Astapkovich","r":5},{"n":"Vitalii Zamedianskyi","r":4},{"n":"Anna Chernenko","r":5},{"n":"Liliia Pylypenko","r":4},{"n":"Tetiana Kovalchuk","r":3},{"n":"Serhii Bondarenko","r":4},{"n":"David Reyes","r":5},{"n":"Viktor Savchenko","r":5},{"n":"Olena Melnyk","r":4},{"n":"Anastasiia Kovalenko","r":4},{"n":"Dmytro Karpenko","r":3},{"n":"Pavlo Shevchenko","r":3},{"n":"Iryna Petrenko","r":4},{"n":"Serhii Tkachenko","r":4},{"n":"Kateryna Bondarenko","r":3},{"n":"Oleksandr Lysenko","r":5},{"n":"Tetiana Shevchenko","r":4},{"n":"Mykola Kravchenko","r":3},{"n":"Vladyslav Kovalenko","r":4},{"n":"Dmytro Savchenko","r":4},{"n":"Olena Kovalenko","r":3},{"n":"Iryna Savchenko","r":4},{"n":"Viktor Kovalenko","r":5},{"n":"Anastasiia Lysenko","r":4},{"n":"Tetiana Petrenko","r":3},{"n":"Serhii Kovalenko","r":4},{"n":"Oleksandr Bondarenko","r":3},{"n":"Pavlo Kravchenko","r":4},{"n":"Iryna Tkachenko","r":5},{"n":"Kateryna Melnyk","r":4},{"n":"Vladyslav Savchenko","r":3},{"n":"Dmytro Bondarenko","r":4},{"n":"Mykola Petrenko","r":5},{"n":"Nataliia Kovalenko","r":4},{"n":"Olena Bondarenko","r":3},{"n":"Serhii Petrenko","r":4},{"n":"Iryna Bondarenko","r":4},{"n":"Vladislav Petrenko","r":3},{"n":"Anastasiia Bondarenko","r":5},{"n":"Pavlo Lysenko","r":4},{"n":"Viktor Tkachenko","r":3},{"n":"Oleksandr Shevchenko","r":4},{"n":"Tetiana Lysenko","r":4},{"n":"Dmytro Petrenko","r":3},{"n":"Kateryna Savchenko","r":4},{"n":"Mykola Bondarenko","r":5},{"n":"Serhii Lysenko","r":4},{"n":"Iryna Kravchenko","r":3},{"n":"Vladyslav Melnyk","r":4},{"n":"Nataliia Petrenko","r":4},{"n":"Roman Savchenko","r":3},{"n":"Olena Lysenko","r":4},{"n":"Viktor Melnyk","r":5},{"n":"Anastasiia Shevchenko","r":4},{"n":"Pavlo Bondarenko","r":4},{"n":"Dmytro Lysenko","r":3},{"n":"Kateryna Lysenko","r":4}];
+
+const N=[{"name":"Aleksandr Nikishin","dept":"Development","team":"Team 11","status":"🟠 At Risk","mood":"😓 Overwhelmed","energy":"😮\u200d💨 Strained","wlb":"⛅ Manageable","score":3.0,"topics":"workload, capacity, burnout, unsustainable","risk":"Medium"},{"name":"Anton Reva - Exit","dept":"Product","team":"Team 12","status":"🔴 Critical","mood":"😞 Struggling","energy":"💤 Low","wlb":"⚖️ Challenged","score":4.0,"topics":"","risk":"High"},{"name":"Daria Shestakova","dept":"Finance","team":"","status":"🟢 Thriving","mood":"🙂 Stable","energy":"💤 Low","wlb":"🌧️ Poor","score":3.33,"topics":"burnout","risk":"Medium"},{"name":"Denys Lysenko","dept":"Operations","team":"Finance","status":"🟡 Needs Support","mood":"🙂 Stable","energy":"💤 Low","wlb":"🌧️ Poor","score":3.33,"topics":"","risk":"Medium"},{"name":"Ekaterina Koroleva","dept":"Development","team":"Team 15","status":"🟡 Needs Support","mood":"😕 Frustrated","energy":"😮\u200d💨 Strained","wlb":"⚖️ Challenged","score":3.0,"topics":"workload, capacity, burnout, unsustainable","risk":"Medium"},{"name":"Elena Podlesna","dept":"Payroll","team":"Payroll","status":"🟢 Thriving","mood":"🙂 Stable","energy":"😮\u200d💨 Strained","wlb":"🌧️ Poor","score":3.0,"topics":"capacity, burnout","risk":"Medium"},{"name":"Ivy Ngan Lam","dept":"Revenue","team":"Sales Operations","status":"🟠 At Risk","mood":"😓 Overwhelmed","energy":"😮\u200d💨 Strained","wlb":"⚖️ Challenged","score":3.33,"topics":"","risk":"Medium"},{"name":"Oleg Pervushin","dept":"Development","team":"Team 4","status":"🟢 Thriving","mood":"🙂 Stable","energy":"😮\u200d💨 Strained","wlb":"🌧️ Poor","score":3.0,"topics":"capacity, burnout","risk":"Medium"},{"name":"Petar Iliev","dept":"Revenue","team":"Community","status":"🟡 Needs Support","mood":"😓 Overwhelmed","energy":"😮\u200d💨 Strained","wlb":"⚖️ Challenged","score":3.33,"topics":"capacity","risk":"Medium"},{"name":"Sal Escobar","dept":"Revenue","team":"RevOps","status":"🟡 Needs Support","mood":"😕 Frustrated","energy":"😮\u200d💨 Strained","wlb":"⚖️ Challenged","score":3.0,"topics":"workload, capacity, unsustainable","risk":"Medium"},{"name":"Svitlana Petrenko","dept":"Operations","team":"Finance","status":"🟡 Needs Support","mood":"😕 Frustrated","energy":"😮\u200d💨 Strained","wlb":"🌧️ Poor","score":3.33,"topics":"burnout, mental","risk":"Medium"}];
+
+const CROSS=["Petar Iliev","Oleg Pervushin"];
+// map notion depts to merged 5-dept structure
+function mND(d){
+  if(!d)return'';
+  if(d==='Payroll'||d.startsWith('Operational')||d.startsWith('Operations'))return'Operations';
+  return d;
+}
+let fD='',fDv='';
+
+function avg(a){return a.length?Math.round(a.reduce((s,v)=>s+v,0)/a.length*100)/100:null}
+function enpsC(rows){
+  const v=rows.map(r=>r.e).filter(x=>x!=null);
+  if(!v.length)return{e:null,n:0,p:0,d:0};
+  const p=v.filter(x=>x>=8).length,d=v.filter(x=>x<=7).length;
+  return{e:Math.round((p/v.length-d/v.length)*100),n:v.length,p,d};
+}
+function ec(v){return v>=30?'vg':v>=10?'va':'vr'}
+function ef(v){return v>=30?'fg1':v>=10?'fa':'fr'}
+function wc(v){return v>=4?'vg':v>=3.5?'va':'vr'}
+function wf(v){return v>=4?'fg2':v>=3.5?'fa':v>=3?'fo':'fr'}
+function mc(v){return v>=4.2?'vg':v>=3.9?'va':'vr'}
+function mf(v){return v>=4.2?'fg1':v>=3.9?'fa':'fo'}
+
+function brow(name,fc,pct,val,vc,note,nc){
+  return`<div class="br-row"><span class="bn ${nc||''}">${name}</span><div class="bt"><div class="bf ${fc}" style="width:${Math.max(2,pct)}%"></div></div><span class="bv ${vc}">${val}</span><span class="bnn">${note||''}</span></div>`;
+}
+function scard(l,v,vc,s,tip){
+  const tipHtml=tip?`<div class="tip">${tip}</div>`:'';
+  const iq=tip?`<span class="iq">?${tipHtml}</span>`:'';
+  return`<div class="sc"><div class="sc-l">${l}${iq}</div><div class="sc-v ${vc}">${v}</div><div class="sc-s">${s}</div></div>`;
+}
+function pill(r){return r==='High'?'<span class="pill pr">High</span>':r==='Medium'?'<span class="pill pa">Medium</span>':'<span class="pill pg">Low</span>';}
+
+function fS(){return S.filter(r=>(!fD||r.d===fD)&&(!fDv||r.dv===fDv))}
+function fN(){
+  if(!fD)return N;
+  return N.filter(r=>mND(r.dept)===fD);
+}
+
+const DEPTS_ORDER=['Revenue','Development','Product','Operations','C-Level'];
+
+function initF(){
+  const ds=document.getElementById('fd');
+  DEPTS_ORDER.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;ds.appendChild(o);});
+  const divs=[...new Set(S.map(r=>r.dv).filter(Boolean))].sort();
+  const dvs=document.getElementById('fdv');
+  divs.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;dvs.appendChild(o);});
+}
+
+function onF(){
+  fD=document.getElementById('fd').value;
+  fDv=document.getElementById('fdv').value;
+  if(fD){
+    const md=[...new Set(S.filter(r=>r.d===fD).map(r=>r.dv).filter(Boolean))].sort();
+    const dvs=document.getElementById('fdv');
+    const cur=dvs.value;
+    dvs.innerHTML='<option value="">All divisions</option>';
+    md.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;if(d===cur)o.selected=true;dvs.appendChild(o);});
+    fDv=dvs.value;
+  }
+  const ac=[fD,fDv].filter(Boolean).length;
+  const ce=document.getElementById('fcnt');
+  ce.style.display=ac?'inline':'none';
+  ce.textContent=ac+' filter'+(ac>1?'s':'')+' active';
+  renderAll();
+}
+
+function resetF(){
+  fD='';fDv='';
+  ['fd','fdv'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('fcnt').style.display='none';
+  const divs=[...new Set(S.map(r=>r.dv).filter(Boolean))].sort();
+  const dvs=document.getElementById('fdv');
+  dvs.innerHTML='<option value="">All divisions</option>';
+  divs.forEach(d=>{const o=document.createElement('option');o.value=d;o.textContent=d;dvs.appendChild(o);});
+  renderAll();
+}
+
+function renderENPS(){
+  const rows=fS();
+  const co=enpsC(rows);
+  const mgrv=rows.map(r=>r.m).filter(x=>x!=null);
+  const ev=co.e!==null?(co.e>=0?'+':'')+co.e:'—';
+
+  document.getElementById('enps-stats').innerHTML=
+    scard('Company eNPS',ev,co.e!==null?ec(co.e):'',co.n+' respondents',
+      '<strong>eNPS = ((Promoters − Detractors) / N) × 100</strong><br><em>Promoters = score 8–10 &nbsp;|&nbsp; Detractors = score 0–7</em><br>Promoters: score 8–10 &nbsp;|&nbsp; Detractors: score 0–7<br>Passives (7–8) counted in N but excluded from numerator<br><em>Source: "How likely to recommend TaxDome as a workplace?"</em>')+
+    scard('Promoters (8–10)',co.n?Math.round(co.p/co.n*100)+'%':'—','vg',co.p+' people',
+      '<strong>Promoters %</strong> = respondents scoring 9 or 10 / total N<br>eNPS benchmark: >50% promoters = strong; >30% = healthy<br><em>Note: uses score ≥8 threshold</em>')+
+    scard('Detractors (0–6)',co.n?Math.round(co.d/co.n*100)+'%':'—','vr',co.d+' people',
+      '<strong>Detractors %</strong> = respondents scoring 0–6 / total N<br>High detractor share pulls eNPS down significantly')+
+    scard('Manager Score avg',avg(mgrv)?avg(mgrv)+'<span style="font-size:18px;font-weight:400">/5</span>':'—','vg','Direct questions',
+      '<strong>Manager Score</strong> = avg of 5 survey items (scale 1–5)<br>• Encourages development<br>• Supportive & respectful<br>• Clear guidance & expectations<br>• Regular helpful feedback<br>• Comfort sharing concerns (indirect, r=0.50)');
+
+  // eNPS bars — by dept or division
+  let groups;
+  if(fDv){groups=[{l:fDv,r:rows}];}
+  else if(fD){groups=[{l:fD,r:rows}];}
+  else{
+    groups=DEPTS_ORDER.map(d=>({l:d,r:S.filter(r=>r.d===d)}));
+    groups.sort((a,b)=>(enpsC(b.r).e||0)-(enpsC(a.r).e||0));
+  }
+  let eb='';
+  groups.forEach(g=>{
+    const {e,n,p,d}=enpsC(g.r);if(!n)return;
+    const vs=(e>=0?'+':'')+e;
+    eb+=brow(g.l,ef(e),Math.max(2,Math.round((e+100)/2)),vs,ec(e),'n='+n,e<5?'bold':'');
+  });
+  if(!fDv&&!fD){
+    const {e,n}=enpsC(S);
+    eb+='<hr class="bdiv">'+brow('Company total',ef(e),Math.max(2,Math.round((e+100)/2)),(e>=0?'+':'')+e,ec(e),'n='+n,'bold');
+  }
+  document.getElementById('enps-bars').innerHTML=eb||'<div class="empty">No data for selected filter</div>';
+
+  // Mgr bars
+  const mgrGroups=fDv||fD?groups:DEPTS_ORDER.map(d=>({l:d,r:S.filter(r=>r.d===d)})).sort((a,b)=>(avg(b.r.map(r=>r.m).filter(x=>x))||0)-(avg(a.r.map(r=>r.m).filter(x=>x))||0));
+  let mb='';
+  mgrGroups.forEach(g=>{
+    const v=avg(g.r.map(r=>r.m).filter(x=>x));if(!v)return;
+    mb+=brow(g.l,mf(v),Math.round(v/5*100),v,mc(v),'',v<4?'bold':'');
+  });
+  document.getElementById('mgr-bars').innerHTML=mb||'<div class="empty">No data</div>';
+
+  document.getElementById('ind-stats').innerHTML=
+    scard('Career aspirations support','65%','va','avg 3.82/5 · r=0.64',
+      '<strong>% scoring ≥4</strong> on "I feel supported in achieving my career aspirations"<br>Strongest indirect signal: r=0.64 correlation with direct manager score<br>Reflects manager\'s role in long-term career development')+
+    scard('Clarity on growth paths','63%','va','avg 3.72/5 · r=0.52',
+      '<strong>% scoring ≥4</strong> on "I clearly understand my professional growth paths"<br>r=0.52 correlation with manager score<br>Lowest-rated question company-wide (avg 3.72)')+
+    scard('Psychological safety','84%','vg','avg 4.27/5 · r=0.50',
+      '<strong>% scoring ≥4</strong> on "I feel comfortable sharing ideas and concerns with my manager"<br>r=0.50 correlation with manager score<br>Company\'s strongest engagement signal');
+}
+
+function renderMood(){
+  const all=PF.map(r=>r.r),n=all.length;
+  const lo=all.filter(v=>v<=2),hi=all.filter(v=>v>=4);
+  const a=avg(all);
+  document.getElementById('mood-stats').innerHTML=
+    scard('PF avg mood',a?a+'<span style="font-size:18px;font-weight:400">/5</span>':'—','va',n+' entries · Mar 2026',
+      '<strong>PeopleForce Mood</strong> = avg of all submitted mood ratings (scale 1–5)<br>1=Very bad, 2=Bad, 3=Neutral, 4=Good, 5=Great<br>Employees submit weekly; snapshot taken Mar 17, 2026')+
+    scard('Mood 4–5',Math.round(hi.length/n*100)+'%','vg',hi.length+' people',
+      '<strong>Positive mood %</strong> = employees who rated 4 or 5 / total entries<br>These are employees feeling good or great at time of submission')+
+    scard('Mood 1–2 (low)',Math.round(lo.length/n*100)+'%','vr',lo.length+' flagged',
+      '<strong>Low mood flag</strong> = employees rating 1 (very bad) or 2 (bad)<br>These 9 employees are listed in the table to the right<br>Cross-check with 1:1 data to prioritize follow-up')+
+    scard('1:1 meetings Q1','325','vb','Jan – Mar 17, 2026',
+      '<strong>1:1 count</strong> = total meetings logged in Notion tracker for Q1 2026<br>Covers all People Partners. Used as basis for burnout risk detection');
+  const cnt=v=>all.filter(r=>Math.round(r)===v).length;
+  const [c1,c2,c3,c4,c5]=[1,2,3,4,5].map(cnt);
+  document.getElementById('pf-bars').innerHTML=
+    `<div class="mdb"><div class="ms fr" style="flex:${c1||.01}">${c1||''}</div><div class="ms fo" style="flex:${c2||.01}">${c2||''}</div><div class="ms fa" style="flex:${c3||.01}">${c3||''}</div><div class="ms fg2" style="flex:${c4||.01}">${c4||''}</div><div class="ms fg1" style="flex:${c5||.01}">${c5||''}</div></div>`+
+    brow('⭐⭐⭐⭐⭐ Rating 5','fg1',Math.round(c5/n*100),Math.round(c5/n*100)+'%','vg',c5+' ppl')+
+    brow('⭐⭐⭐⭐ Rating 4','fg2',Math.round(c4/n*100),Math.round(c4/n*100)+'%','vg',c4+' ppl')+
+    brow('⭐⭐⭐ Rating 3','fa', Math.round(c3/n*100),Math.round(c3/n*100)+'%','va',c3+' ppl')+
+    brow('⭐⭐ Rating 2','fo', Math.round(c2/n*100),Math.round(c2/n*100)+'%','va',c2+' ppl')+
+    brow('⭐ Rating 1','fr',  Math.round(c1/n*100),Math.round(c1/n*100)+'%','vr',c1+' ppl');
+  const lowP=PF.filter(r=>r.r<=2);
+  let t='<table class="dt"><thead><tr><th>Employee</th><th>Rating</th><th>Cross-signal</th></tr></thead><tbody>';
+  lowP.forEach(p=>{const x=CROSS.includes(p.n);t+=`<tr><td>${p.n}</td><td><span class="pill ${p.r===1?'pr':'pa'}">${p.r}/5</span></td><td>${x?'<span class="pill pr">Burnout risk (1:1)</span>':'<span class="pill pgy">—</span>'}</td></tr>`;});
+  t+='</tbody></table>';
+  document.getElementById('pf-low').innerHTML=t;
+}
+
+function renderBurnout(){
+  const sr=fS(),nr=fN();
+  const wlv=sr.map(r=>r.w).filter(x=>x!=null);
+  const wa=avg(wlv);
+  const wpl=wlv.length?Math.round(wlv.filter(v=>v<=2).length/wlv.length*100):0;
+  const mh=nr.filter(r=>r.score&&r.score>=3).length;
+  document.getElementById('burn-stats').innerHTML=
+    scard('Workload manageable',wa?wa+'<span style="font-size:18px;font-weight:400">/5</span>':'—',wa&&wa<3.5?'vr':'va','Lowest-rated question',
+      '<strong>Workload avg</strong> = avg score on "My workload is manageable most of the time" (1–5)<br>1=Strongly disagree, 5=Strongly agree<br>Lowest-rated question in entire survey (company avg 3.63)')+
+    scard('Scoring ≤2 on workload',wpl+'%','va','~'+Math.round(wlv.length*wpl/100)+' people',
+      '<strong>% scoring ≤2</strong> = respondents who rated workload 1 or 2 (disagree/strongly disagree)<br>These employees are at elevated burnout risk from overload')+
+    scard('Burnout risk (1:1)',mh,'va','Medium+ out of '+nr.length+' tracked',
+      '<strong>Burnout risk score</strong> = avg of 3 signals from latest Q1 1:1:<br>• Energy Level (1=High → 5=Burnout Risk)<br>• Work-Life Balance (1=Healthy → 5=Critical)<br>• Mood (1=Positive → 5=Struggling)<br>Medium = score ≥3.0 &nbsp;|&nbsp; High = score ≥4.0')+
+    scard('Low PF mood (≤2)',PF.filter(r=>r.r<=2).length,'vr','10% of entries',
+      '<strong>Low PF mood count</strong> = employees with most recent PeopleForce rating of 1 or 2<br>Combined with 1:1 burnout score for cross-signal detection');
+  const dlist=fD?[fD]:DEPTS_ORDER;
+  const dwl=dlist.map(d=>{
+    const v=S.filter(r=>r.d===d&&(!fDv||r.dv===fDv)).map(r=>r.w).filter(x=>x!=null);
+    return{l:d,a:avg(v),pl:v.length?Math.round(v.filter(x=>x<=2).length/v.length*100):0};
+  }).filter(g=>g.a!==null).sort((a,b)=>a.a-b.a);
+  let wb='';
+  dwl.forEach(g=>{wb+=brow(g.l,wf(g.a),Math.round(g.a/5*100),g.a.toFixed(2),wc(g.a),g.pl+'% ≤2',g.a<3.5?'bold':'');});
+  document.getElementById('wl-bars').innerHTML=wb||'<div class="empty">No data</div>';
+
+  const ar=nr.filter(r=>r.score&&r.score>=3);
+  if(!ar.length){document.getElementById('bacc').innerHTML='<div class="empty">No medium/high risk employees match current filters.</div>';document.getElementById('bcross').innerHTML='';return;}
+  const byD={};
+  ar.forEach(r=>{const k=mND(r.dept)||r.dept||'Unknown';if(!byD[k])byD[k]=[];byD[k].push(r);});
+  let ah='';
+  const high=ar.filter(r=>r.risk==='High');
+  if(high.length)ah+=mkAcc('h','<span style="color:var(--rd)">🔴 High Risk</span>',`<span class="pill pr">${high.length}</span>`,high);
+  Object.entries(byD).sort((a,b)=>b[1].filter(p=>p.risk==='Medium').length-a[1].filter(p=>p.risk==='Medium').length).forEach(([dept,ppl])=>{
+    const med=ppl.filter(p=>p.risk==='Medium');if(!med.length)return;
+    ah+=mkAcc('d_'+dept.replace(/\W+/g,'_'),dept,`<span class="pill pa">${med.length} Medium</span>`,med);
+  });
+  document.getElementById('bacc').innerHTML=ah;
+  const cx=CROSS.filter(name=>ar.some(r=>r.name===name));
+  document.getElementById('bcross').innerHTML=cx.length?`<div class="alrt"><strong>Cross-signal alert:</strong> ${cx.join(' and ')} appear in both 1:1 burnout signals AND PeopleForce low mood (≤2). Priority follow-up recommended.</div>`:'';
+}
+
+function mkAcc(id,title,badge,ppl){
+  const rows=ppl.map(p=>{
+    const x=CROSS.includes(p.name);
+    const tp=p.topics?(p.topics+(x?' · <strong style="color:var(--rd)">PF mood low</strong>':'')):(x?'<span class="pill pr" style="font-size:11px">PF mood ≤2</span>':'<span style="color:var(--tx3)">—</span>');
+    return`<tr><td><strong ${p.risk==='High'?'style="color:var(--rd)"':''}>${p.name}</strong></td><td style="font-size:12px;color:var(--tx2)">${mND(p.dept)||p.dept}${p.team?' · '+p.team:''}</td><td>${p.status}</td><td>${p.mood}</td><td>${p.energy}</td><td>${p.wlb}</td><td>${pill(p.risk)}</td><td style="font-size:12px">${tp}</td></tr>`;
+  }).join('');
+  return`<div class="acc"><div class="ah" onclick="tAcc('${id}')"><div class="ahl"><span class="cv" id="c-${id}">▶</span>${title}</div><div class="ahr">${badge}</div></div><div class="ab" id="b-${id}"><table class="dt"><thead><tr><th>Employee</th><th>Dept / Team</th><th>Status</th><th>Mood</th><th>Energy</th><th>WLB</th><th>Risk</th><th>Topics</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
+
+function tAcc(id){const b=document.getElementById('b-'+id),c=document.getElementById('c-'+id);if(!b)return;const o=b.classList.toggle('open');if(c)c.textContent=o?'▼':'▶';}
+function sTab(t,el){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');}
+function sBurn(v,el){document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('b-avg').style.display=v==='avg'?'block':'none';document.getElementById('b-ppl').style.display=v==='ppl'?'block':'none';}
+function renderAll(){renderENPS();renderMood();renderBurnout();}
+initF();renderAll();
+</script>
+</body>
+</html>
